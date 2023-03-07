@@ -5,7 +5,7 @@ A python script to keep your iris images in shape ;)
 ## Usage
 
 ```
-usage: copy-data.py [-h] -c CPF -d DATA_DIR [--csp] [-p]
+usage: copy-data.py [-h] -c CPF -d DATA_DIR [--csp] [-p] [-o OTHER [OTHER ...]]
 
 Copy data from a directory to the IRIS data directory
 
@@ -16,6 +16,8 @@ optional arguments:
                         path to the directory where the data files are located
   --csp                 toggle the copy of the whole CSP folder
   -p, --python          toggle the copy of python libs
+  -o OTHER [OTHER ...], --other OTHER [OTHER ...]
+                        toggle the copy of other folders
 ```
 
 ## How to use it
@@ -39,8 +41,8 @@ COPY fhirUI /usr/irissys/csp/user/fhirUI
 
 # run iris and initial 
 RUN iris start IRIS \
-	&& iris session IRIS < /tmp/iris.script \
-	&& iris stop IRIS quietly
+    && iris session IRIS < /tmp/iris.script \
+    && iris stop IRIS quietly
 ```
 
 This is a simple Dockerfile that will build an image with the iris source code and the fhir data. It will also run the iris.script to create the fhir database and load the data.
@@ -66,8 +68,8 @@ COPY fhirUI /usr/irissys/csp/user/fhirUI
 
 # run iris and initial 
 RUN iris start IRIS \
-	&& iris session IRIS < /tmp/iris.script \
-	&& iris stop IRIS quietly
+    && iris session IRIS < /tmp/iris.script \
+    && iris stop IRIS quietly
 
 # copy data from builder
 FROM $IMAGE as final
@@ -75,8 +77,8 @@ FROM $IMAGE as final
 ADD --chown=${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} https://github.com/grongierisc/iris-docker-multi-stage-script/releases/latest/download/copy-data.py /irisdev/app/copy-data.py
 
 RUN --mount=type=bind,source=/,target=/builder/root,from=builder \
-	cp -f /builder/root/usr/irissys/iris.cpf /usr/irissys/iris.cpf && \
-	python3 /irisdev/app/copy-data.py -c /usr/irissys/iris.cpf -d /builder/root/ 
+    cp -f /builder/root/usr/irissys/iris.cpf /usr/irissys/iris.cpf && \
+    python3 /irisdev/app/copy-data.py -c /usr/irissys/iris.cpf -d /builder/root/ 
 ```
 
 This is a multi-stage Dockerfile that will build an image with the iris source code and the fhir data. It will also run the iris.script to create the fhir database and load the data. But it will also copy the data from the builder image to the final image. This will reduce the size of the final image.
