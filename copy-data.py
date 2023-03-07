@@ -68,8 +68,6 @@ if __name__ == '__main__':
     parser.add_argument('--csp', help='toggle the copy of the whole CSP folder', action='store_true')
     # parse the arguments for python libs
     parser.add_argument('-p','--python', help='toggle the copy of python libs', action='store_true')
-    # parse the arguments for help
-    parser.add_argument('-h', '--help', help='show this help message and exit', action='store_true')
 
     args = parser.parse_args()
     if args.help:
