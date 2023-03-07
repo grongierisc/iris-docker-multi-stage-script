@@ -61,15 +61,20 @@ if __name__ == '__main__':
     # parse the command line arguments with argparse
     parser = argparse.ArgumentParser(description='Copy data from a directory to the IRIS data directory')
     # add the argument for the iris.cpf in the first position or -c or --cpf
-    parser.add_argument('-c', '--cpf', help='path to the iris.cpf file')
+    parser.add_argument('-c', '--cpf', help='path to the iris.cpf file', required=True)
     # add the argument for the data directory -d or --data_dir or can be at the second position
-    parser.add_argument('-d', '--data_dir', help='path to the directory where the data files are located')
+    parser.add_argument('-d', '--data_dir', help='path to the directory where the data files are located', required=True)
     # parse the arguments for csp folders
-    parser.add_argument('--csp', help='path to the csp folders')
+    parser.add_argument('--csp', help='toggle the copy of the whole CSP folder', action='store_true')
     # parse the arguments for python libs
-    parser.add_argument('-p','--python', help='path to the python libs')
+    parser.add_argument('-p','--python', help='toggle the copy of python libs', action='store_true')
+    # parse the arguments for help
+    parser.add_argument('-h', '--help', help='show this help message and exit', action='store_true')
 
     args = parser.parse_args()
+    if args.help:
+        parser.print_help()
+        exit(0)
     # get the iris.cpf file
     iris_cpf_file = args.cpf
     # get the data directory
