@@ -52,6 +52,7 @@ def python_copy(data_dir):
     other_copy(data_dir, 'usr/irissys/lib/python/')
     other_copy(data_dir, 'usr/irissys/mgr/python/')
     other_copy(data_dir, 'home/irisowner/.local/lib')
+    other_copy(data_dir, 'home/irisowner/.local/bin')
 
 def csp_copy(data_dir):
     other_copy(data_dir, 'usr/irissys/csp/')
