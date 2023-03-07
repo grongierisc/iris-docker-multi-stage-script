@@ -70,7 +70,7 @@ RUN iris start IRIS \
 	&& iris stop IRIS quietly
 
 # copy data from builder
-FROM $IMAGE
+FROM $IMAGE as final
 
 ADD --chown=${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} https://github.com/grongierisc/iris-docker-multi-stage-script/releases/latest/download/copy-data.py /irisdev/app/copy-data.py
 
@@ -111,7 +111,7 @@ RUN iris start IRIS \
 Basically the same as the non-multi-stage Dockerfile
 
 ```dockerfile
-FROM $IMAGE
+FROM $IMAGE as final
 ```
 
 Start with the base image
