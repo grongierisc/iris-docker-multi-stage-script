@@ -4,6 +4,22 @@ A python script to keep your iris images in shape ;)
 
 ## Usage
 
+```
+usage: copy-data.py [-h] -c CPF -d DATA_DIR [--csp] [-p]
+
+Copy data from a directory to the IRIS data directory
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CPF, --cpf CPF     path to the iris.cpf file
+  -d DATA_DIR, --data_dir DATA_DIR
+                        path to the directory where the data files are located
+  --csp                 toggle the copy of the whole CSP folder
+  -p, --python          toggle the copy of python libs
+```
+
+## How to use it
+
 First have a look at a non-multi-stage Dockerfile for iris:
 
 ```dockerfile
@@ -66,6 +82,33 @@ RUN --mount=type=bind,source=/,target=/builder/root,from=builder \
 This is a multi-stage Dockerfile that will build an image with the iris source code and the fhir data. It will also run the iris.script to create the fhir database and load the data. But it will also copy the data from the builder image to the final image. This will reduce the size of the final image.
 
 Let read in details the multi-stage Dockerfile:
+
+```dockerfile
+ARG IMAGE=intersystemsdc/irishealth-community:latest
+FROM $IMAGE as builder
+```
+
+Define the base image and the name of the builder image
+
+```dockerfile
+WORKDIR /irisdev/app
+RUN chown ${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} /irisdev/app
+USER ${ISC_PACKAGE_MGRUSER}
+
+# copy source code
+COPY src src
+COPY misc misc
+COPY data/fhir fhirdata
+COPY iris.script /tmp/iris.script
+COPY fhirUI /usr/irissys/csp/user/fhirUI
+
+# run iris and initial 
+RUN iris start IRIS \
+	&& iris session IRIS < /tmp/iris.script \
+	&& iris stop IRIS quietly
+```
+
+Basically the same as the non-multi-stage Dockerfile
 
 ```dockerfile
 FROM $IMAGE
