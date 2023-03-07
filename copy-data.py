@@ -39,23 +39,22 @@ def copy_data(iris_cpf_file, data_dir):
     for db_name, db_path in dbs.items():
         process_line(db_name, db_path, data_dir)
 
-def csp_copy(data_dir):
-    # copy the csp folders to the data_dir
-    csp_folders = 'usr/irissys/csp/'
+def other_copy(data_dir, other_folder):
+    # copy the other folders to the data_dir
+    other_folder = 'usr/irissys/lib/python/'
     root = '/'
-    src = os.path.join(data_dir, csp_folders)
-    dst = os.path.join(root, csp_folders)
+    src = os.path.join(data_dir, other_folder)
+    dst = os.path.join(root, other_folder)
     logging.info('copying directory: {} to {}'.format(src, dst))
     shutil.copytree(src, dst, symlinks=True, ignore=None, dirs_exist_ok=True)
 
 def python_copy(data_dir):
-    # copy the python folders to the data_dir
-    python_folders = 'usr/irissys/lib/python/'
-    root = '/'
-    src = os.path.join(data_dir, python_folders)
-    dst = os.path.join(root, python_folders)
-    logging.info('copying directory: {} to {}'.format(src, dst))
-    shutil.copytree(src, dst, symlinks=True, ignore=None, dirs_exist_ok=True)
+    other_copy(data_dir, 'usr/irissys/lib/python/')
+    other_copy(data_dir, 'usr/irissys/mgr/python/')
+    other_copy(data_dir, 'home/irisowner/.local/lib')
+
+def csp_copy(data_dir):
+    other_copy(data_dir, 'usr/irissys/csp/')
 
 if __name__ == '__main__':
     # parse the command line arguments with argparse
@@ -68,6 +67,8 @@ if __name__ == '__main__':
     parser.add_argument('--csp', help='toggle the copy of the whole CSP folder', action='store_true')
     # parse the arguments for python libs
     parser.add_argument('-p','--python', help='toggle the copy of python libs', action='store_true')
+    # parse the arguments for other folders
+    parser.add_argument('-o','--other', help='toggle the copy of other folders', nargs='+', required=False)
 
     args = parser.parse_args()
 
@@ -82,4 +83,8 @@ if __name__ == '__main__':
     # if the python folders are defined, copy them to the data directory
     if args.python:
         python_copy(data_dir)
+
+    if args.other:
+        for folder in args.other:
+            other_copy(data_dir, folder)
 
