@@ -64,3 +64,27 @@ RUN --mount=type=bind,source=/,target=/builder/root,from=builder \
 ```
 
 This is a multi-stage Dockerfile that will build an image with the iris source code and the fhir data. It will also run the iris.script to create the fhir database and load the data. But it will also copy the data from the builder image to the final image. This will reduce the size of the final image.
+
+Let read in details the multi-stage Dockerfile:
+
+```dockerfile
+FROM $IMAGE
+```
+
+Start with the base image
+
+```dockerfile
+ADD --chown=${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} https://github.com/grongierisc/iris-docker-multi-stage-script/releases/latest/download/copy-data.py /irisdev/app/copy-data.py
+```
+
+Add the copy-data.py script to the image with the right user and group
+
+```dockerfile
+RUN --mount=type=bind,source=/,target=/builder/root,from=builder \
+    cp -f /builder/root/usr/irissys/iris.cpf /usr/irissys/iris.cpf && \
+    python3 /irisdev/app/copy-data.py -c /usr/irissys/iris.cpf -d /builder/root/ 
+```
+
+A lot is happening here. First we are using the --mount option to mount the builder image. 
+
+Then we are copying the iris.cpf file from the builder image to the final image. Finally we are running the copy-data.py script to copy the data from the builder image to the final image.
