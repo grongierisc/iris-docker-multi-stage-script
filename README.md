@@ -85,6 +85,22 @@ RUN --mount=type=bind,source=/,target=/builder/root,from=builder \
     python3 /irisdev/app/copy-data.py -c /usr/irissys/iris.cpf -d /builder/root/ 
 ```
 
-A lot is happening here. First we are using the --mount option to mount the builder image. 
+A lot is happening here. 
 
-Then we are copying the iris.cpf file from the builder image to the final image. Finally we are running the copy-data.py script to copy the data from the builder image to the final image.
+First we are using the --mount option to mount the builder image. 
+- --mount=type=bind is the type of mount
+- source=/ is the root of the builder image
+- target=/builder/root is the root of the final image
+- from=builder is the name of the builder image
+
+Then we are copying the iris.cpf file from the builder image to the final image. 
+
+```bash
+cp -f /builder/root/usr/irissys/iris.cpf /usr/irissys/iris.cpf
+```
+
+Finally we are running the copy-data.py script to copy the data from the builder image to the final image.
+
+```bash
+python3 /irisdev/app/copy-data.py -c /usr/irissys/iris.cpf -d /builder/root/ 
+```
