@@ -39,11 +39,23 @@ def copy_data(iris_cpf_file, data_dir):
     for db_name, db_path in dbs.items():
         process_line(db_name, db_path, data_dir)
 
-def csp_copy(csp_folders, data_dir):
+def csp_copy(data_dir):
     # copy the csp folders to the data_dir
-    for csp_folder in csp_folders:
-        logging.info('copying csp folder: {} to {}'.format(csp_folder, data_dir))
-        shutil.copytree(csp_folder, os.path.join(data_dir, csp_folder), symlinks=True, ignore=None, dirs_exist_ok=True)
+    csp_folders = 'usr/irissys/csp/'
+    root = '/'
+    src = os.path.join(data_dir, csp_folders)
+    dst = os.path.join(root, csp_folders)
+    logging.info('copying directory: {} to {}'.format(src, dst))
+    shutil.copytree(src, dst, symlinks=True, ignore=None, dirs_exist_ok=True)
+
+def python_copy(data_dir):
+    # copy the python folders to the data_dir
+    python_folders = 'usr/irissys/lib/python/'
+    root = '/'
+    src = os.path.join(data_dir, python_folders)
+    dst = os.path.join(root, python_folders)
+    logging.info('copying directory: {} to {}'.format(src, dst))
+    shutil.copytree(src, dst, symlinks=True, ignore=None, dirs_exist_ok=True)
 
 if __name__ == '__main__':
     # parse the command line arguments with argparse
@@ -54,8 +66,9 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--data_dir', help='path to the directory where the data files are located')
     # parse the arguments for csp folders
     parser.add_argument('--csp', help='path to the csp folders')
-    # parse the arguments license file
-    parser.add_argument('-l', '--license', help='path to the license file')
+    # parse the arguments for python libs
+    parser.add_argument('-p','--python', help='path to the python libs')
+
     args = parser.parse_args()
     # get the iris.cpf file
     iris_cpf_file = args.cpf
@@ -64,13 +77,8 @@ if __name__ == '__main__':
     copy_data(iris_cpf_file, data_dir)
     # if the csp folders are defined, copy them to the data directory
     if args.csp:
-        pass
-    if args.license:
-        pass
-        # copy the license file to the data directory
-        # license_file = 'usr/irissys/iris.key'
-        # root_dir = '/'
-        # dst = os.path.join(root_dir, license_file)
-        # src = os.path.join(data_dir, license_file)
-        # logging.info('copying license file: {} to {}'.format(src, dst))
-        # shutil.copyfile(src, dst)
+        csp_copy(data_dir)
+    # if the python folders are defined, copy them to the data directory
+    if args.python:
+        python_copy(data_dir)
+
