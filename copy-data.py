@@ -70,9 +70,7 @@ if __name__ == '__main__':
     parser.add_argument('-p','--python', help='toggle the copy of python libs', action='store_true')
 
     args = parser.parse_args()
-    if args.help:
-        parser.print_help()
-        exit(0)
+
     # get the iris.cpf file
     iris_cpf_file = args.cpf
     # get the data directory
