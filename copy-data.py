@@ -41,7 +41,6 @@ def copy_data(iris_cpf_file, data_dir):
 
 def other_copy(data_dir, other_folder):
     # copy the other folders to the data_dir
-    other_folder = 'usr/irissys/lib/python/'
     root = '/'
     src = os.path.join(data_dir, other_folder)
     dst = os.path.join(root, other_folder)
