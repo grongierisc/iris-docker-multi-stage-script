@@ -1,6 +1,37 @@
 # iris-docker-multi-stage-script
 
-A python script to keep your iris images in shape ;)
+A python script to keep your docker iris images in shape ;)
+
+| without multi-stage | with multi-stage |
+| --- | --- |
+|![image](https://github.com/grongierisc/iris-docker-multi-stage-script/blob/main/misc/before.png?raw=true)| ![image](https://github.com/grongierisc/iris-docker-multi-stage-script/blob/main/misc/after.png?raw=true)|
+
+**Witout changing your dockerfile or your code** you can reduce the size of your image by 50% or more !
+
+## TL;DR
+
+Name the builder image `builder` and the final image `final` and add this to end of your Dockerfile:
+
+Modify your Dockerfile to use a multi-stage build:
+
+```dockerfile
+ARG IMAGE=intersystemsdc/irishealth-community:latest
+FROM $IMAGE as builder
+```
+
+Add this to end of your Dockerfile:
+
+```dockerfile
+FROM $IMAGE as final
+
+ADD --chown=${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} https://github.com/grongierisc/iris-docker-multi-stage-script/releases/latest/download/copy-data.py /irisdev/app/copy-data.py
+
+RUN --mount=type=bind,source=/,target=/builder/root,from=builder \
+    cp -f /builder/root/usr/irissys/iris.cpf /usr/irissys/iris.cpf && \
+    python3 /irisdev/app/copy-data.py -c /usr/irissys/iris.cpf -d /builder/root/ 
+```
+
+**Boom! You're done!**
 
 ## Usage
 
@@ -135,7 +166,7 @@ A lot is happening here.
 First we are using the --mount option to mount the builder image. 
 - --mount=type=bind is the type of mount
 - source=/ is the root of the builder image
-- target=/builder/root is the root of the final image
+- target=/builder/root is the root of the builder image mounted in the final
 - from=builder is the name of the builder image
 
 Then we are copying the iris.cpf file from the builder image to the final image. 
@@ -149,3 +180,59 @@ Finally we are running the copy-data.py script to copy the data from the builder
 ```bash
 python3 /irisdev/app/copy-data.py -c /usr/irissys/iris.cpf -d /builder/root/ 
 ```
+
+### Side by side comparison
+
+<table>
+    <tr>
+        <th>Non multi-stage Dockerfile</th>
+        <th>Multi-stage Dockerfile</th>
+    </tr>
+    <tr>
+        <td>
+        <pre lang="dockerfile">
+ARG IMAGE=intersystemsdc/irishealth-community:latest
+FROM $IMAGE
+
+WORKDIR /irisdev/app
+RUN chown ${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} /irisdev/app
+USER ${ISC_PACKAGE_MGRUSER}
+
+COPY . .
+
+RUN iris start IRIS \
+    && iris session IRIS < /tmp/iris.script \
+    && iris stop IRIS quietly
+        </pre>
+        </td>
+        <td>
+        <pre lang="dockerfile">
+            <div>
+ARG IMAGE=intersystemsdc/irishealth-community:latest
+FROM $IMAGE as builder
+
+WORKDIR /irisdev/app
+RUN chown ${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} /irisdev/app
+USER ${ISC_PACKAGE_MGRUSER}
+
+
+COPY . .
+
+
+RUN iris start IRIS \
+    && iris session IRIS < /tmp/iris.script \
+    && iris stop IRIS quietly
+
+FROM $IMAGE as final
+
+ADD --chown=${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} https://github.com/grongierisc/iris-docker-multi-stage-script/releases/latest/download/copy-data.py /irisdev/app/copy-data.py
+
+RUN --mount=type=bind,source=/,target=/builder/root,from=builder \
+    cp -f /builder/root/usr/irissys/iris.cpf /usr/irissys/iris.cpf && \
+    python3 /irisdev/app/copy-data.py -c /usr/irissys/iris.cpf -d /builder/root/
+            </div>
+        </pre>
+        </td>
+</table>
+
+
