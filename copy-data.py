@@ -67,9 +67,9 @@ if __name__ == '__main__':
     # add the argument for the data directory -d or --data_dir or can be at the second position
     parser.add_argument('-d', '--data_dir', help='path to the directory where the data files are located', required=True)
     # parse the arguments for csp folders
-    parser.add_argument('--csp', help='toggle the copy of the whole CSP folder', action='store_true')
+    parser.add_argument('--csp', help='toggle the copy of the whole CSP folder', action='store_false')
     # parse the arguments for python libs
-    parser.add_argument('-p','--python', help='toggle the copy of python libs', action='store_true')
+    parser.add_argument('-p','--python', help='toggle the copy of python libs', action='store_false')
     # parse the arguments for other folders
     parser.add_argument('-o','--other', help='toggle the copy of other folders', nargs='+', required=False)
 
