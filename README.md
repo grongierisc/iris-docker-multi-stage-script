@@ -181,7 +181,17 @@ Finally we are running the copy-data.py script to copy the data from the builder
 python3 /irisdev/app/copy-data.py -c /usr/irissys/iris.cpf -d /builder/root/ 
 ```
 
-### Side by side comparison
+## How it works
+
+The copy-data.py script will read the iris.cpf file to get the list of data files. Then it will copy the data files from the builder image to the final image.
+
+The benefit :
+- The final image will be smaller
+- Your final image will be more secure because you will not have the source code in the final image
+- You can use the same Dockerfile for your CI/CD pipeline and for your production environment
+- Your final image don't contain any temporary file
+
+## Side by side comparison
 
 <table>
     <tr>
