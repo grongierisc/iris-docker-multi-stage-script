@@ -44,8 +44,11 @@ def other_copy(data_dir, other_folder):
     root = '/'
     src = os.path.join(data_dir, other_folder)
     dst = os.path.join(root, other_folder)
-    logging.info('copying directory: {} to {}'.format(src, dst))
-    shutil.copytree(src, dst, symlinks=True, ignore=None, dirs_exist_ok=True)
+    if os.path.exists(src):
+        logging.info('copying directory: {} to {}'.format(src, dst))
+        shutil.copytree(src, dst, symlinks=True, ignore=None, dirs_exist_ok=True)
+    else:
+        logging.error('directory {} does not exist'.format(src))
 
 def python_copy(data_dir):
     other_copy(data_dir, 'usr/irissys/lib/python/')
