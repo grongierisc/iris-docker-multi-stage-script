@@ -6,7 +6,7 @@ A python script to keep your docker iris images in shape ;)
 | --- | --- |
 |![image](https://github.com/grongierisc/iris-docker-multi-stage-script/blob/main/misc/before.png?raw=true)| ![image](https://github.com/grongierisc/iris-docker-multi-stage-script/blob/main/misc/after.png?raw=true)|
 
-**Witout changing your dockerfile or your code** you can reduce the size of your image by 50% or more !
+**Without changing your dockerfile or your code** you can reduce the size of your image by 50% or more !
 
 ## TL;DR
 
@@ -245,4 +245,29 @@ RUN --mount=type=bind,source=/,target=/builder/root,from=builder \
         </td>
 </table>
 
+## Older versions
 
+Older versions of IRIS images have no (2020) or too old a version of
+Python (2021) installed. The minimum required version of Python for
+`copy-data.py` is 3.8. Fortunately, this version is already available on
+the Ubuntu 18.04 LTS version these IRIS images are based on. It can be
+installed in the `final` step:
+
+```dockerfile
+# Build steps...
+
+FROM $IMAGE as final
+
+USER root
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends python3.8
+USER ${ISC_PACKAGE_MGRUSER}
+RUN ln -s /usr/bin/python3.8 ~/bin/python3 \
+    && chown=${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} ~/bin/python3
+
+# Copy steps as described above...
+```
+
+Installing Python this way adds a bit of disk space to the image: about
+48MB on IRIS 2020.1.2, 34MB on IRIS 2021.1.2. Especially on IRISHealth
+images, total space saved will still be significant.
