@@ -37,7 +37,8 @@ def copy_data(iris_cpf_file, data_dir):
     # get the [Databases] section
     dbs = config['Databases']
     for db_name, db_path in dbs.items():
-        process_line(db_name, db_path, data_dir)
+        clean_db_path = get_substring_before_first_comma(db_path)
+        process_line(db_name, clean_db_path, data_dir)
 
 def other_copy(data_dir, other_folder):
     # copy the other folders to the data_dir
@@ -58,6 +59,15 @@ def python_copy(data_dir):
 
 def csp_copy(data_dir):
     other_copy(data_dir, 'usr/irissys/csp/')
+
+def get_substring_before_first_comma(s):
+    # Find the index of the first comma
+    index = s.find(',')
+    # If a comma is found, return the substring up to that index
+    if index != -1:
+        return s[:index]
+    # If no comma is found, return the entire string
+    return s
 
 if __name__ == '__main__':
     # parse the command line arguments with argparse
